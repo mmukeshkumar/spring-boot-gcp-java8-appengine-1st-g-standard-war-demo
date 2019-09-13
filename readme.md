@@ -28,20 +28,20 @@ mvnw clean install appengine:run
 
 # Testing locally:
 * List all available REST endpoints
- * curl -i http://localhost:8080
+  * curl -i http://localhost:8080
 * List orders
   * curl -i http://localhost:8080/orders
 
 # Deploying to google app engine:
 ./mvnw appengine:deploy
 
-# sample curl requests
+# Sample curl requests
 curl -i -XPOST \
 -H "Content-Type: application/json" \
 -d '{"firstName":"Larry","lastName":"Grooves","customerId":"53a2e699-0205-4546-aae6-8fc903c478c7","orderDate":"2019-10-10T18:06:48.526+0000"}' \
 http://localhost:8080/orders
 
-# submit request and get trace Id back
+# Submitting a request and getting trace Id back
 curl -i -XPOST \
 -H "Content-Type: application/json" \
 -d '{"firstName":"Larry","lastName":"Grooves","customerId":"53a2e699-0205-4546-aae6-8fc903c478c7","orderDate":"2019-10-10T18:06:48.526+0000"}' \
@@ -62,7 +62,7 @@ alt-svc: quic=":443"; ma=2592000; v="46,43,39"
 Advanced search entry in stackdriver logviewer
 (trace="projects/spring-boot-gcp-demo-251616/traces/46dc8f6388fadba0d182970fbf88d792")
 
-# force a trace Id:
+# Forcing a trace Id:
 curl -i -XPOST \
 -H "Content-Type: application/json" \
 -H "X-Cloud-Trace-Context: 105445aa7843bc8bf206b120001000" \
