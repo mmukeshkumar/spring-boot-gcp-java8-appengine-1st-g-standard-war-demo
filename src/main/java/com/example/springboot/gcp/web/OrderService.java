@@ -1,5 +1,6 @@
 package com.example.springboot.gcp.web;
 
+import com.example.springboot.gcp.model.Greeting;
 import com.example.springboot.gcp.model.Order;
 import com.example.springboot.gcp.model.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @RequestMapping("/orders")
 @RestController
@@ -39,7 +41,7 @@ public class OrderService {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public String createOrder(@Valid @RequestBody Order order, boolean skipPamentCall) {
+    public String createOrder(@Valid @RequestBody Order order, boolean skipPamentCall) throws ExecutionException, InterruptedException {
         String orderId = UUID.randomUUID().toString();
         order.setId(UUID.randomUUID().toString());
         order.setFirstName(order.getFirstName());
@@ -50,7 +52,8 @@ public class OrderService {
         orderRepository.save(order);
         if (!skipPamentCall) {
             orderPaymentsService.getPaymentApprovalFromPaymentService(orderId, ordersPaymentsApprovalBaseUrl);
-            ordersPubSubService.greet("Hello from Mukesh from inside POST /orders");
+            Greeting greeting = new Greeting("Hello");
+            ordersPubSubService.greet(greeting);
         }
         return orderId;
     }
@@ -89,9 +92,10 @@ public class OrderService {
      * Read List of Orders
      */
     @GetMapping
-    public Iterable<Order> getAllOrders() {
+    public Iterable<Order> getAllOrders() throws ExecutionException, InterruptedException {
         logger.info("sending a greeting from inside GET /orders");
-        ordersPubSubService.greet("Hello from Mukesh from inside GET /orders");
+        Greeting greeting = new Greeting("Hello");
+        ordersPubSubService.greet(greeting);
         logger.info("Listing all orders");
         return orderRepository.findAll();
     }

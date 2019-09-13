@@ -10,10 +10,15 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -33,6 +38,7 @@ import java.util.UUID;
 // 5) https://cloud.spring.io/spring-cloud-gcp/single/spring-cloud-gcp.html#_stackdriver_logging
 //6)https://www.baeldung.com/spring-cloud-sleuth-single-application
 //7) https://cloud.google.com/appengine/docs/standard/java/config/appref
+//8) https://www.logicbig.com/tutorials/spring-framework/spring-web-mvc/async-config.html
 
 public class GcpDemoApplication implements WebMvcConfigurer {
 
@@ -45,6 +51,18 @@ public class GcpDemoApplication implements WebMvcConfigurer {
 
     @Autowired
     private SpanCustomizer spanCustomizer;
+
+    @Override
+    public void configureAsyncSupport (AsyncSupportConfigurer configurer) {
+        ThreadPoolTaskExecutor t = new ThreadPoolTaskExecutor();
+        t.setCorePoolSize(10);
+        t.setMaxPoolSize(100);
+        t.setQueueCapacity(50);
+        t.setAllowCoreThreadTimeOut(true);
+        t.setKeepAliveSeconds(120);
+        t.initialize();
+        configurer.setTaskExecutor(t);
+    }
 
 
     @Component
@@ -62,32 +80,32 @@ public class GcpDemoApplication implements WebMvcConfigurer {
         public void run(ApplicationArguments args) throws Exception {
 
 
-                orderService.deleteAllOrders();
-                Order order1 = new Order();
-                order1.setCustomerId(UUID.randomUUID().toString());
-                order1.setFirstName("Mukesh");
-                order1.setLastName("Kumar");
+            orderService.deleteAllOrders();
+            Order order1 = new Order();
+            order1.setCustomerId(UUID.randomUUID().toString());
+            order1.setFirstName("Mukesh");
+            order1.setLastName("Kumar");
 
            /* SimpleDateFormat sdfAmerica = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a");
             sdfAmerica.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
              String dateTime = sdfAmerica.format(new Date());
 */
-                order1.setOrderDate(new Date());
+            order1.setOrderDate(new Date());
 
-                Order order2 = new Order();
-                order2.setCustomerId(UUID.randomUUID().toString());
-                order2.setFirstName("Zippy");
-                order2.setLastName("Kumar");
-                order2.setOrderDate(new Date());
+            Order order2 = new Order();
+            order2.setCustomerId(UUID.randomUUID().toString());
+            order2.setFirstName("Zippy");
+            order2.setLastName("Kumar");
+            order2.setOrderDate(new Date());
 
-                List<Order> orders = new ArrayList<>();
-                orders.add(order1);
-                orders.add(order2);
+            List<Order> orders = new ArrayList<>();
+            orders.add(order1);
+            orders.add(order2);
 
-                String newOrderId = orderService.createOrder(order1, true);
-                logger.info("Order created, order Id:  {}", newOrderId);
-                newOrderId = orderService.createOrder(order2, true);
-                logger.info("Order created, order Id:  {}", newOrderId);
+            String newOrderId = orderService.createOrder(order1, true);
+            logger.info("Order created, order Id:  {}", newOrderId);
+            newOrderId = orderService.createOrder(order2, true);
+            logger.info("Order created, order Id:  {}", newOrderId);
 
         }
     }
@@ -108,9 +126,27 @@ public class GcpDemoApplication implements WebMvcConfigurer {
     }
 
     @Bean
-    public RestTemplate getRestTemplate(){
+    public RestTemplate getRestTemplate() {
         return new RestTemplate();
     }
+/*
+    @Bean
+    public ServletRegistrationBean dispatcherServlet() {
+        ServletRegistrationBean registration = new ServletRegistrationBean(
+                new DispatcherServlet(), "/");
+        registration.setAsyncSupported(true);
+        return registration;
+    }
+
+    @Bean
+    public ServletRegistrationBean dispatcherServletRegistration() {
+        ServletRegistrationBean registration = dispatcherServlet();
+        registration.setLoadOnStartup(0);
+        registration.setName(
+                DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
+
+        return registration;
+    }*/
 }
 
 
