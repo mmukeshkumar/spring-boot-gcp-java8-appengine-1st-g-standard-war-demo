@@ -1,5 +1,5 @@
 # Description:
-* Demo Java 8 maven project showcasing Spring boot, Spring cloud GCP Spanner, Stackdriver.
+* Demo Java 8 maven project showcasing Spring boot, Spring cloud GCP Spanner, Pub/Sub and Stackdriver tracing and logging.
 * Its deployable to gae-standard 1st generation which uses Java8 and Jetty 9
 * It demos distributed tracing, co-relating logs in cases where one request spawns multiple requests across multiple micro services
 * It also demos integration with GCP Spanner DB using Spring cloud GCP
