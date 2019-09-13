@@ -32,6 +32,7 @@ import java.util.UUID;
 // 4) https://cloud.google.com/appengine/docs/standard/java11/config/appref
 // 5) https://cloud.spring.io/spring-cloud-gcp/single/spring-cloud-gcp.html#_stackdriver_logging
 //6)https://www.baeldung.com/spring-cloud-sleuth-single-application
+
 public class GcpDemoApplication implements WebMvcConfigurer {
 
     static private final Logger logger = LoggerFactory.getLogger(GcpDemoApplication.class);

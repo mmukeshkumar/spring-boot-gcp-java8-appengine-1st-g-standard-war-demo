@@ -4,9 +4,8 @@
     <threadsafe>true</threadsafe>
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
-<!--
+
 		<property name="spring.profiles.active" value="dev_local" />
--->
-        <property name="spring.profiles.active" value="dev_gcp" />
+        <!--<property name="spring.profiles.active" value="dev_gcp" />-->
     </system-properties>
 </appengine-web-app>
