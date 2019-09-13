@@ -1,10 +1,11 @@
 # Description:
-Demo Java 11 maven project showcasing Spring boot, Spring cloud GCP, Spanner, Stackdriver, its deployable to gae-standard
-It demos distributed tracing, co-relating logs in cases where one request spawns multiple requests across multiple micro services
-It also demos integration with GCP Spanner DB using Spring cloud GCP APIs
+* Demo Java 8 maven project showcasing Spring boot, Spring cloud GCP Spanner, Stackdriver,].
+* Its deployable to gae-standard 1st generation which uses Java8 and Jetty 9
+* It demos distributed tracing, co-relating logs in cases where one request spawns multiple requests across multiple micro services
+* It also demos integration with GCP Spanner DB using Spring cloud GCP
 
 # Prerequisites 
-1. Install Java 11 JDK
+1. Install Java 8 JDK
 2. Set up a project in GCP through https://cloud.google.com/ or gcloud CLI
 3. Enable billing
 
@@ -12,16 +13,19 @@ It also demos integration with GCP Spanner DB using Spring cloud GCP APIs
 ./mvnw clean install
 
 # Running locally: 
-java -jar target/spring-boot-gcp-java11-stackdriver-tracing-logging-demo-0.0.1-SNAPSHOT.jar
-OR 
-import project into Intellij IDE and run the GcpDemoApplication as a Java application
-OR
+
+1. Change spring active profile in appengine-web.xml file to dev_local
+2. Copy spring-boot-gcp-demo-251616-80aae1c91d25.json to a local directory and update the path
+under application-dev_local.properties file
+3. Run using
 set JAVA_HOME=C:\dev\Java\jdk1.8.0_211
 Set PATH=%JAVA_HOME%\bin;%PATH%
-set GOOGLE_APPLICATION_CREDENTIALS=C:/dev/spring-boot-gcp-demo-251616-80aae1c91d25.json
-set JAVA_OPTS=-Xms3g -Xmx3g
+set JAVA_OPTS=-Xms2g -Xmx2g
 cd C:\dev\projects\gcp\spring-boot-gcp-java8-appengine-1st-g-standard-war-demo
-mvn clean install appengine:run -Dmaven.test.skip=true -Drun.jvmArguments=-Dspring.profiles.active=dev_local
+mvn clean install appengine:run
+
+# NOTE: **** You can also run by Importing project into Intellij IDE and run the GcpDemoApplication as a Java application ***
+
 # Testing locally:
 List REST endpoints
 curl -i http://localhost:8080
@@ -29,15 +33,15 @@ List orders
 curl -i http://localhost:8080/orders
 
 # Deploying to google app engine:
-./mvnw appengine:deploy -Dapp.deploy.projectId=[your-gcp-project-name]
+./mvnw appengine:deploy
 
-#sample curl requests
+# sample curl requests
 curl -i -XPOST \
 -H "Content-Type: application/json" \
 -d '{"firstName":"Larry","lastName":"Grooves","customerId":"53a2e699-0205-4546-aae6-8fc903c478c7","orderDate":"2019-10-10T18:06:48.526+0000"}' \
 http://localhost:8080/orders
 
-#submit request and get trace Id back
+# submit request and get trace Id back
 curl -i -XPOST \
 -H "Content-Type: application/json" \
 -d '{"firstName":"Larry","lastName":"Grooves","customerId":"53a2e699-0205-4546-aae6-8fc903c478c7","orderDate":"2019-10-10T18:06:48.526+0000"}' \
