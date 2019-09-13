@@ -1,8 +1,8 @@
-package com.example.springboot.gcp.web;
+package com.example.springboot.gcp.web.controllers;
 
 import com.example.springboot.gcp.model.Greeting;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.example.springboot.gcp.services.PubSubAsyncService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.cloud.gcp.pubsub.core.PubSubTemplate;
@@ -21,15 +21,13 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 @RestController
-public class OrdersPubSubService {
-
-    static private final Logger logger = LoggerFactory.getLogger(OrdersPubSubService.class);
-
+@Slf4j
+public class OrdersPubSubController {
 
     private final PubSubTemplate template;
     private final PubSubAsyncService pubSubAsyncService;
 
-    public OrdersPubSubService(PubSubTemplate template, PubSubAsyncService pubSubAsyncService) {
+    public OrdersPubSubController(PubSubTemplate template, PubSubAsyncService pubSubAsyncService) {
         this.pubSubAsyncService = pubSubAsyncService;
         this.template = template;
     }
@@ -37,17 +35,16 @@ public class OrdersPubSubService {
     @PostMapping("/greet")
     @ResponseStatus(HttpStatus.CREATED)
     public String greet(@RequestBody Greeting greeting) {
-        logger.info("Publishing greeting message: {} to topic: {}", greeting.getMessage(), "greetings-topic");
+        log.info("Publishing greeting message: {} to topic: {}", greeting.getMessage(), "greetings-topic");
         pubSubAsyncService.publishAsync(greeting.getMessage());
         return "success";
-
     }
 
 
     @PostMapping("/greetAsync")
     @ResponseStatus(HttpStatus.CREATED)
     public WebAsyncTask<String> greetAsync(@RequestBody Greeting greeting) {
-        logger.info("Publishing greeting message: {} to topic: {}", greeting.getMessage(), "greetings-topic");
+        log.info("Publishing greeting message: {} to topic: {}", greeting.getMessage(), "greetings-topic");
         Callable callable = new Callable() {
             @Override
             public String call() throws Exception {
@@ -59,13 +56,6 @@ public class OrdersPubSubService {
                 Executors.newFixedThreadPool(1));
         return new WebAsyncTask<>(10000L, t, callable);
     }
-
-/*
-    @PostMapping("/greet/{message}")
-    ListenableFuture<String> greet(@PathVariable String message) {
-        logger.info("Publishing greeting message: {} to topic: {}", message, "greetings-topic");
-        return this.template.publish("greetings-topic", "greetings Message: " + message + "!");
-    }*/
 
 
     @Component
@@ -80,11 +70,11 @@ public class OrdersPubSubService {
 
         @Override
         public void run(ApplicationArguments args) {
-            logger.info("Running  ConsumerRunner: ");
+            log.info("Running  ConsumerRunner: ");
             pubSubTemplate.subscribe("greetings-subscription", new Consumer<BasicAcknowledgeablePubsubMessage>() {
                 @Override
                 public void accept(BasicAcknowledgeablePubsubMessage basicAcknowledgeablePubsubMessage) {
-                    logger.info("Received message: " + basicAcknowledgeablePubsubMessage.getPubsubMessage().toString());
+                    log.info("Received message: " + basicAcknowledgeablePubsubMessage.getPubsubMessage().toString());
                     basicAcknowledgeablePubsubMessage.ack();
                 }
             });

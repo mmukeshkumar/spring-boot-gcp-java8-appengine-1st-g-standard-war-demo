@@ -1,22 +1,17 @@
 package com.example.springboot.gcp;
 
 import brave.SpanCustomizer;
-import com.example.springboot.gcp.model.Order;
-import com.example.springboot.gcp.web.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -24,10 +19,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 @SpringBootApplication
 //Based of
@@ -39,21 +30,27 @@ import java.util.UUID;
 //6)https://www.baeldung.com/spring-cloud-sleuth-single-application
 //7) https://cloud.google.com/appengine/docs/standard/java/config/appref
 //8) https://www.logicbig.com/tutorials/spring-framework/spring-web-mvc/async-config.html
+//9)http://zetcode.com/springboot/springbootservletinitializer/
 
-public class GcpDemoApplication implements WebMvcConfigurer {
+@Slf4j
+public class GcpDemoApplication extends SpringBootServletInitializer implements WebMvcConfigurer  {
 
     static private final Logger logger = LoggerFactory.getLogger(GcpDemoApplication.class);
+
+    @Autowired
+    private Environment environment;
 
 
     public static void main(String[] args) {
         SpringApplication.run(GcpDemoApplication.class, args);
+
     }
 
     @Autowired
     private SpanCustomizer spanCustomizer;
 
     @Override
-    public void configureAsyncSupport (AsyncSupportConfigurer configurer) {
+    public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
         ThreadPoolTaskExecutor t = new ThreadPoolTaskExecutor();
         t.setCorePoolSize(10);
         t.setMaxPoolSize(100);
@@ -64,52 +61,10 @@ public class GcpDemoApplication implements WebMvcConfigurer {
         configurer.setTaskExecutor(t);
     }
 
-
-    @Component
-// This will run on application startup
-// for setting up some data on startup
-    class SpannerOrdersRunner implements ApplicationRunner {
-
-        private final OrderService orderService;
-
-        SpannerOrdersRunner(OrderService orderService) {
-            this.orderService = orderService;
-        }
-
-        @Override
-        public void run(ApplicationArguments args) throws Exception {
-
-
-            orderService.deleteAllOrders();
-            Order order1 = new Order();
-            order1.setCustomerId(UUID.randomUUID().toString());
-            order1.setFirstName("Mukesh");
-            order1.setLastName("Kumar");
-
-           /* SimpleDateFormat sdfAmerica = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a");
-            sdfAmerica.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
-             String dateTime = sdfAmerica.format(new Date());
-*/
-            order1.setOrderDate(new Date());
-
-            Order order2 = new Order();
-            order2.setCustomerId(UUID.randomUUID().toString());
-            order2.setFirstName("Zippy");
-            order2.setLastName("Kumar");
-            order2.setOrderDate(new Date());
-
-            List<Order> orders = new ArrayList<>();
-            orders.add(order1);
-            orders.add(order2);
-
-            String newOrderId = orderService.createOrder(order1, true);
-            logger.info("Order created, order Id:  {}", newOrderId);
-            newOrderId = orderService.createOrder(order2, true);
-            logger.info("Order created, order Id:  {}", newOrderId);
-
-        }
+    @Bean
+    public RestTemplate getRestTemplate() {
+        return new RestTemplate();
     }
-
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -117,36 +72,16 @@ public class GcpDemoApplication implements WebMvcConfigurer {
             @Override
             public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
                     throws Exception {
-                //spanCustomizer.tag("session-id", request.getSession().getId());
-                //spanCustomizer.tag("environment", "DEV_GCP");
+              /*  spanCustomizer.tag("session-id", request.getSession().getId());
+                spanCustomizer.tag("environment", "DEV_GCP");*/
                 // add customer_id or order_id or any other id which would help co-relate and track requests
                 return true;
             }
         });
     }
 
-    @Bean
-    public RestTemplate getRestTemplate() {
-        return new RestTemplate();
-    }
-/*
-    @Bean
-    public ServletRegistrationBean dispatcherServlet() {
-        ServletRegistrationBean registration = new ServletRegistrationBean(
-                new DispatcherServlet(), "/");
-        registration.setAsyncSupported(true);
-        return registration;
-    }
 
-    @Bean
-    public ServletRegistrationBean dispatcherServletRegistration() {
-        ServletRegistrationBean registration = dispatcherServlet();
-        registration.setLoadOnStartup(0);
-        registration.setName(
-                DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
 
-        return registration;
-    }*/
 }
 
 

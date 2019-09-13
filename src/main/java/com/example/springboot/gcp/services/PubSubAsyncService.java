@@ -1,16 +1,12 @@
-package com.example.springboot.gcp.web;
+package com.example.springboot.gcp.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gcp.pubsub.core.PubSubTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class PubSubAsyncService {
-
-    static private final Logger logger = LoggerFactory.getLogger(OrdersPubSubService.class);
-
 
     private final PubSubTemplate template;
 
@@ -18,7 +14,7 @@ public class PubSubAsyncService {
         this.template = template;
     }
 
-    void publishAsync(String message){
+    public void publishAsync(String message) {
         this.template.publish("greetings-topic", "greetings Message: " + message + "!");
     }
 }
