@@ -1,5 +1,5 @@
 # Description:
-* Demo Java 8 maven project showcasing Spring boot, Spring cloud GCP Spanner, Stackdriver,].
+* Demo Java 8 maven project showcasing Spring boot, Spring cloud GCP Spanner, Stackdriver.
 * Its deployable to gae-standard 1st generation which uses Java8 and Jetty 9
 * It demos distributed tracing, co-relating logs in cases where one request spawns multiple requests across multiple micro services
 * It also demos integration with GCP Spanner DB using Spring cloud GCP
@@ -10,21 +10,21 @@
 3. Enable billing
 
 # Building
-./mvnw clean install
+mvnw clean install
 
 # Running locally: 
 
 1. Change spring active profile in appengine-web.xml file to dev_local
 2. Copy spring-boot-gcp-demo-251616-80aae1c91d25.json to a local directory and update the path
 under application-dev_local.properties file
-3. Run using
+3. Run using the following commands:
 set JAVA_HOME=C:\dev\Java\jdk1.8.0_211
 Set PATH=%JAVA_HOME%\bin;%PATH%
 set JAVA_OPTS=-Xms2g -Xmx2g
 cd C:\dev\projects\gcp\spring-boot-gcp-java8-appengine-1st-g-standard-war-demo
-mvn clean install appengine:run
+mvnw clean install appengine:run
 
-# NOTE: **** You can also run by Importing project into Intellij IDE and run the GcpDemoApplication as a Java application ***
+### NOTE: You can also run by Importing project into Intellij IDE and running the GcpDemoApplication class as a Java application
 
 # Testing locally:
 List REST endpoints
@@ -71,7 +71,7 @@ https://spring-boot-gcp-demo-251616.appspot.com/orders
 ##  Note: This wont work for some reason, the passed in X-Cloud-Trace-Context does not get used
 
 
-# Issues/todas
+# Issues/Todos
  * force a trace Id wont work, the passed in X-Cloud-Trace-Context does not get used, instead a new X-Cloud-Trace-Context gets used and returned
  * when deployed to app engine standard, its takes upto 30 seconds to start an instances since all instances get shutdown when no requests come in
    for certain period of time
