@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+    <application>spring-boot-gcp-java8-appengine-1st-g-standard-war-demo-webapp</application>
     <runtime>java8</runtime>
     <threadsafe>true</threadsafe>
+    <service>default</service>
+    <version>1</version>
+    <threadsafe>true</threadsafe>
+    <instance-class>F2</instance-class>
+    <automatic-scaling>
+        <target-cpu-utilization>0.65</target-cpu-utilization>
+        <min-instances>1</min-instances>
+        <max-instances>2</max-instances>
+        <max-concurrent-requests>50</max-concurrent-requests>
+    </automatic-scaling>
+
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
-
 		<property name="spring.profiles.active" value="dev_local" />
         <!--<property name="spring.profiles.active" value="dev_gcp" />-->
     </system-properties>

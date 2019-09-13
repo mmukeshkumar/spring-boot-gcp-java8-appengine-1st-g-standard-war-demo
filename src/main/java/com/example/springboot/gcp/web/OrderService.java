@@ -24,12 +24,14 @@ public class OrderService {
     private final RestTemplate restTemplate;
     private final String ordersPaymentsApprovalBaseUrl;
     private final OrderPaymentsService orderPaymentsService;
+    private final OrdersPubSubService ordersPubSubService;
 
-    public OrderService(OrderRepository orderRepository, @Value("${retailapi.ordersPaymentsApprovalBaseUrl}") String ordersPaymentsApprovalBaseUrl, OrderPaymentsService orderPaymentsService, RestTemplate restTemplate) {
+    public OrderService(OrderRepository orderRepository, @Value("${retailapi.ordersPaymentsApprovalBaseUrl}") String ordersPaymentsApprovalBaseUrl, OrderPaymentsService orderPaymentsService, RestTemplate restTemplate, OrdersPubSubService ordersPubSubService) {
         this.orderRepository = orderRepository;
         this.ordersPaymentsApprovalBaseUrl = ordersPaymentsApprovalBaseUrl;
         this.orderPaymentsService = orderPaymentsService;
         this.restTemplate = restTemplate;
+        this.ordersPubSubService = ordersPubSubService;
     }
 
     /**
@@ -46,8 +48,9 @@ public class OrderService {
         order.setOrderDate(order.getOrderDate());
         logger.info("Adding Order ID: {}", orderId);
         orderRepository.save(order);
-        if(!skipPamentCall){
+        if (!skipPamentCall) {
             orderPaymentsService.getPaymentApprovalFromPaymentService(orderId, ordersPaymentsApprovalBaseUrl);
+            ordersPubSubService.greet("Hello from Mukesh from inside POST /orders");
         }
         return orderId;
     }
@@ -87,6 +90,8 @@ public class OrderService {
      */
     @GetMapping
     public Iterable<Order> getAllOrders() {
+        logger.info("sending a greeting from inside GET /orders");
+        ordersPubSubService.greet("Hello from Mukesh from inside GET /orders");
         logger.info("Listing all orders");
         return orderRepository.findAll();
     }
