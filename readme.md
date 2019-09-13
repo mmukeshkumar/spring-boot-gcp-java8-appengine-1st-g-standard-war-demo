@@ -27,10 +27,10 @@ mvnw clean install appengine:run
 ### NOTE: You can also run by Importing project into Intellij IDE and running the GcpDemoApplication class as a Java application
 
 # Testing locally:
-List REST endpoints
-curl -i http://localhost:8080
-List orders
-curl -i http://localhost:8080/orders
+* List all available REST endpoints
+ * curl -i http://localhost:8080
+* List orders
+  * curl -i http://localhost:8080/orders
 
 # Deploying to google app engine:
 ./mvnw appengine:deploy
@@ -75,8 +75,7 @@ https://spring-boot-gcp-demo-251616.appspot.com/orders
  * force a trace Id wont work, the passed in X-Cloud-Trace-Context does not get used, instead a new X-Cloud-Trace-Context gets used and returned
  * when deployed to app engine standard, its takes upto 30 seconds to start an instances since all instances get shutdown when no requests come in
    for certain period of time
-   
-   
+      
  # Please ignore this exception while on startup, it does not affect application
  
  2019-09-12 14:17:35.006 ERROR [orders-service,,,] 660 --- [           main] i.g.i.ManagedChannelOrphanWrapper        : *~*~*~ Channel ManagedChannelImpl{logId=1, target=logging.googleapis.com:443} was not shutdown properly!!! ~*~*~*
