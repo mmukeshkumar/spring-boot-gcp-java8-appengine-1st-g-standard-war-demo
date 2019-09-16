@@ -70,11 +70,22 @@ curl -i -XPOST \
 https://spring-boot-gcp-demo-251616.appspot.com/orders
 ##  Note: This wont work for some reason, the passed in X-Cloud-Trace-Context does not get used
 
-
-# Issues/Todos
+# Issues
  * force a trace Id wont work, the passed in X-Cloud-Trace-Context does not get used, instead a new X-Cloud-Trace-Context gets used and returned
  * when deployed to app engine standard, its takes upto 30 seconds to start an instances since all instances get shutdown when no requests come in
    for certain period of time
+# Todos
+ * Add maven profiles for running with and without embedded tomcat by removing tomcat starter from spring boot web starter
+   and adding servlet api dependency
+     <!-- Include Servlet API -->
+       <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>javax.servlet-api</artifactId>
+         <version>3.1.0</version>
+         <scope>provided</scope>
+       </dependency>
+    based of demo project here
+    https://github.com/GoogleCloudPlatform/getting-started-java/tree/master/appengine-standard-java8/springboot-appengine-standard   
       
  ## Please ignore this exception while on startup, it does not affect application
  
