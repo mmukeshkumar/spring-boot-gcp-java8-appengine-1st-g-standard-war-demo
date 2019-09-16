@@ -36,10 +36,24 @@ mvnw clean install appengine:run
 ./mvnw appengine:deploy
 
 # Sample curl requests
+curl -i http://localhost:8080/orders
+
 curl -i -XPOST \
 -H "Content-Type: application/json" \
 -d '{"firstName":"Larry","lastName":"Grooves","customerId":"53a2e699-0205-4546-aae6-8fc903c478c7","orderDate":"2019-10-10T18:06:48.526+0000"}' \
 http://localhost:8080/orders
+
+curl -X POST \
+-H "Content-Type: application/json" \
+-H "Accept: application/json" \
+-d '{"message": "Hello"}' \
+http://localhost:8080/greet
+
+curl -X POST \
+-H "Content-Type: application/json" \
+-H "Accept: application/json" \
+-d '{"message": "Hello"}' \
+http://localhost:8080/greetAsync 
 
 # Submitting a request and getting trace Id back
 curl -i -XPOST \
